@@ -1,0 +1,76 @@
+{
+  "sections": {
+    "cart-items": {
+      "type": "main-cart-items",
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "cart-footer": {
+      "type": "main-cart-footer",
+      "blocks": {
+        "af8a5ef6-3a71-46b1-93cd-d87d238fc8e9": {
+          "type": "subtotal",
+          "settings": {
+          }
+        },
+        "d15d0ca4-7870-4653-9ec9-7213e3123c4a": {
+          "type": "freeship",
+          "settings": {
+            "free_ship_goal": 10000,
+            "regular_text_color": "#ff0000",
+            "free_ship_text_color": "#0081ff"
+          }
+        },
+        "buttons": {
+          "type": "buttons",
+          "settings": {
+          }
+        }
+      },
+      "block_order": [
+        "af8a5ef6-3a71-46b1-93cd-d87d238fc8e9",
+        "d15d0ca4-7870-4653-9ec9-7213e3123c4a",
+        "buttons"
+      ],
+      "settings": {
+      }
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "custom_css": [
+        ".grid:last-child {margin-bottom: 0; flex-wrap: inherit; overflow: auto;}"
+      ],
+      "settings": {
+        "title": "Featured collection",
+        "heading_size": "h2",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "collection": "all",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "enable_desktop_slider": false,
+        "color_scheme": "background-1",
+        "image_ratio": "adapt",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "enable_quick_add": false,
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "cart-items",
+    "cart-footer",
+    "featured-collection"
+  ]
+}

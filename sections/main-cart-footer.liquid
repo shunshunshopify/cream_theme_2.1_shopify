@@ -1,0 +1,201 @@
+{{ 'component-cart.css' | asset_url | stylesheet_tag }}
+{{ 'component-totals.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-discounts.css' | asset_url | stylesheet_tag }}
+
+<div class="page-width{% if cart == empty %} is-empty{% endif %}" id="main-cart-footer" data-id="{{ section.id }}">
+  <div>
+    <div class="cart__footer">
+      {%- if settings.show_cart_note -%}
+        <cart-note class="cart__note field">
+          <label for="Cart-note">{{ 'sections.cart.note' | t }}</label>
+          <textarea class="text-area field__input" name="note" form="cart" id="Cart-note" placeholder="{{ 'sections.cart.note' | t }}">{{ cart.note }}</textarea>
+        </cart-note>
+      {%- endif -%}
+
+      <div class="cart__blocks">
+        {% for block in section.blocks %}
+          {%- case block.type -%}
+            {%- when 'freeship' -%}
+                <small id="free-ship" class="tax-note caption-large rte">
+                  {% assign goal = block.settings.free_ship_goal | times: 100 %}
+                  {% if goal != blank %}
+                    
+                  {% assign cartTotal = cart.total_price %}
+                  {% assign difference = goal | minus: cartTotal %}
+
+                  <!-- Baseload -->
+                  <div class="f-ship-baseload">
+                  {% if difference <= 0 %}
+                    <!-- Free shipping -->
+                    <span class="class-free-ship" style="color:{{ block.settings.free_ship_text_color }}">
+                      Congratulations!! You now qualify for free shipping.
+                    </span>
+                  {% else %}
+                    <!-- No free shipping -->
+                    <span class="class-no-ship" style="color:{{ block.settings.regular_text_color }}">
+                      You are <span class="freeShip-away">{{ difference | money_with_currency }}</span> away from getting free shipping.
+                    </span>
+                  {% endif %}
+                  </div>
+                  <!--    -->
+
+                    
+                  <!-- Reload -->
+                  <div class="f-ship-reload" style="display:none;">
+                    
+                    <!-- Free shipping -->
+                    <span class="class-free-ship" style="display: none; color:{{ block.settings.free_ship_text_color }}">
+                      Congratulations!! You now qualify for free shipping.
+                    </span>
+        
+                    <!-- No free shipping -->
+                    <span class="class-no-ship" style="display: none; color:{{ block.settings.regular_text_color }}">
+                      You are <span class="freeShip-away">{{ difference | money_with_currency }}</span> away from getting free shipping.
+                    </span>
+       
+                  </div>
+                  <!--    -->
+
+                    
+                    
+                  {% assign freeShipArray = "" %}
+                  {% assign freeShipArray =  freeShipArray | append: goal | append: '+' %} 
+                  {% assign freeShipArray =  freeShipArray | append: cartTotal | append: '+' %} 
+                  {% assign freeShipArray =  freeShipArray | append: difference | append: '+' %} 
+
+                  <script type="application/json">
+                    {{ freeShipArray | json }}
+                  </script>
+                    
+                  {% endif %}
+                </small>
+            
+            {%- when '@app' -%}
+              {% render block %}
+            {%- when 'subtotal' -%}
+              <div class="js-contents" {{ block.shopify_attributes }}>
+                <div class="totals">
+                  <h2 class="totals__subtotal">{{ 'sections.cart.subtotal' | t }}</h2>
+                  <p class="totals__subtotal-value">{{ cart.total_price | money_with_currency }}</p>
+                </div>
+
+                <div>
+                  {%- if cart.cart_level_discount_applications.size > 0 -%}
+                    <ul class="discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">
+                      {%- for discount in cart.cart_level_discount_applications -%}
+                        <li class="discounts__discount discounts__discount--position">
+                          {%- render 'icon-discount' -%}
+                          {{ discount.title }}
+                          (-{{ discount.total_allocated_amount | money }})
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+                </div>
+
+                <small class="tax-note caption-large rte">
+                  {%- if cart.taxes_included and shop.shipping_policy.body != blank -%}
+                    {{ 'sections.cart.taxes_included_and_shipping_policy_html' | t: link: shop.shipping_policy.url }}
+                  {%- elsif cart.taxes_included -%}
+                    {{ 'sections.cart.taxes_included_but_shipping_at_checkout' | t }}
+                  {%- elsif shop.shipping_policy.body != blank -%}
+                    {{ 'sections.cart.taxes_and_shipping_policy_at_checkout_html' | t: link: shop.shipping_policy.url }}
+                  {%- else -%}
+                    {{ 'sections.cart.taxes_and_shipping_at_checkout' | t }}
+                  {%- endif -%}
+                </small>
+              </div>
+            {%- else -%}
+              <div class="cart__ctas" {{ block.shopify_attributes }}>
+                <noscript>
+                  <button type="submit" class="cart__update-button button button--secondary" form="cart">
+                    {{ 'sections.cart.update' | t }}
+                  </button>
+                </noscript>
+
+                <button type="submit" id="checkout" class="cart__checkout-button button" name="checkout"{% if cart == empty %} disabled{% endif %} form="cart">
+                  {{ 'sections.cart.checkout' | t }}
+                </button>
+              </div>
+
+              {%- if additional_checkout_buttons -%}
+                <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
+                  {{ content_for_additional_checkout_buttons }}
+                </div>
+              {%- endif -%}
+          {%- endcase -%}
+        {% endfor %}
+
+        <div id="cart-errors"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    function isIE() {
+      const ua = window.navigator.userAgent;
+      const msie = ua.indexOf('MSIE ');
+      const trident = ua.indexOf('Trident/');
+
+      return (msie > 0 || trident > 0);
+    }
+
+    if (!isIE()) return;
+    const cartSubmitInput = document.createElement('input');
+    cartSubmitInput.setAttribute('name', 'checkout');
+    cartSubmitInput.setAttribute('type', 'hidden');
+    document.querySelector('#cart').appendChild(cartSubmitInput);
+    document.querySelector('#checkout').addEventListener('click', function(event) {
+      document.querySelector('#cart').submit();
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main-cart-footer.name",
+  "class": "cart__footer-wrapper",
+  "blocks": [
+    {
+      "type": "subtotal",
+      "name": "t:sections.main-cart-footer.blocks.subtotal.name",
+      "limit": 1
+    },
+    {
+      "type": "buttons",
+      "name": "t:sections.main-cart-footer.blocks.buttons.name",
+      "limit": 1
+    },
+    {
+      "type": "freeship",
+      "name": "Until Free Shipping",
+      "limit": 1,
+      "settings":[
+        {
+          "type": "number",
+          "id": "free_ship_goal",
+          "label": "Free Shipping Goal"
+        },
+        {
+          "type": "color",
+          "id": "regular_text_color",
+          "label": "Regular Text Color Before",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "free_ship_text_color",
+          "label": "Free Ship Text Color After",
+          "default": "#FF0000"
+        }
+      ]
+    },
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}

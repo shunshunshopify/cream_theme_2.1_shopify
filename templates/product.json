@@ -1,0 +1,198 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "b310e801-e8ae-48fe-90df-78eb788084c0": {
+          "type": "variant_sku",
+          "settings": {
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+          }
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button"
+          }
+        },
+        "eb0755aa-43be-4267-a248-edb6e4b31a40": {
+          "type": "inventory_count",
+          "settings": {
+            "show_inventory_threshold": 5,
+            "text_color": ""
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {
+          }
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": false
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+          }
+        },
+        "collapsible-row-2": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "製品仕様",
+            "icon": "none",
+            "content": "<p>セミキュアジェルネイルシート4枚 (7枚+7枚+9枚+9枚)、ネイルファイル１個、ウッドスティック1本、プレップパッド2個<\/p>",
+            "page": ""
+          }
+        },
+        "collapsible-row-0": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "素材",
+            "icon": "none",
+            "content": "<p>グレーズ：ポリウレタンコーポリマー、ポリアクリルレートコーポリマー<br\/>ネイルファイル：プラスチック、研磨紙<br\/>ウッドスティック：木材<\/p>",
+            "page": ""
+          }
+        },
+        "collapsible-row-1": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "配送について",
+            "icon": "none",
+            "content": "<p>全国一律550円（税込）ですが、一回の雑貨の商品金額合計が15,000円（税込）以上の場合、送料無料で配送いたします。<\/p>",
+            "page": ""
+          }
+        },
+        "collapsible-row-3": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "保管及び取り扱いの注意",
+            "icon": "none",
+            "content": "<p>※グレーズは光（日光、室内光）で硬化します。専用ケースに入れて遮光し、常温（15-25度）で保管してください。火気の近くや高温多湿及び低温の所、直射日光は避けてください。<\/p>",
+            "page": ""
+          }
+        },
+        "59e01f2e-70d0-40d6-b9c0-e1952dc7f8ca": {
+          "type": "popup",
+          "settings": {
+            "text": "Size Chart",
+            "page": "walk-kit-collection"
+          }
+        }
+      },
+      "block_order": [
+        "b310e801-e8ae-48fe-90df-78eb788084c0",
+        "title",
+        "price",
+        "variant_picker",
+        "eb0755aa-43be-4267-a248-edb6e4b31a40",
+        "quantity_selector",
+        "buy_buttons",
+        "description",
+        "collapsible-row-2",
+        "collapsible-row-0",
+        "collapsible-row-1",
+        "collapsible-row-3",
+        "59e01f2e-70d0-40d6-b9c0-e1952dc7f8ca"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "media_position": "left",
+        "gallery_layout": "thumbnail_slider",
+        "media_size": "medium",
+        "mobile_thumbnails": "show",
+        "hide_variants": false,
+        "enable_video_looping": false,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "image-with-text": {
+      "type": "image-with-text",
+      "blocks": {
+        "image-with-text-0": {
+          "type": "heading",
+          "settings": {
+            "heading": "The one by Solstar",
+            "heading_size": "h1"
+          }
+        },
+        "image-with-text-1": {
+          "type": "text",
+          "settings": {
+            "text": "<p>まとった瞬間、まだ見ぬうつくしさが覚醒する。<\/p>",
+            "text_style": "body"
+          }
+        },
+        "416a1c62-fe0a-4ea4-8579-ae9eec965cfb": {
+          "type": "button",
+          "settings": {
+            "button_label": "コレクションを見る",
+            "button_link": "shopify:\/\/collections\/japan-limited4"
+          }
+        }
+      },
+      "block_order": [
+        "image-with-text-0",
+        "image-with-text-1",
+        "416a1c62-fe0a-4ea4-8579-ae9eec965cfb"
+      ],
+      "settings": {
+        "image": "shopify:\/\/shop_images\/solstar_image_7_copy.webp",
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "text_first",
+        "desktop_content_position": "top",
+        "desktop_content_alignment": "left",
+        "content_layout": "overlap",
+        "color_scheme": "background-2",
+        "mobile_content_alignment": "center",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "7e487e70e504593065ad": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "custom_css": [
+        ".grid:last-child {margin-bottom: 0; flex-wrap: inherit; overflow: auto;}"
+      ],
+      "settings": {
+        "heading": "あなたへのオススメ商品",
+        "heading_size": "h2",
+        "products_to_show": 10,
+        "columns_desktop": 4,
+        "color_scheme": "background-1",
+        "image_ratio": "adapt",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "columns_mobile": "2",
+        "padding_top": 36,
+        "padding_bottom": 28
+      }
+    }
+  },
+  "order": [
+    "main",
+    "image-with-text",
+    "7e487e70e504593065ad",
+    "product-recommendations"
+  ]
+}

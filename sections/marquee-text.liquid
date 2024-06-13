@@ -1,0 +1,167 @@
+{% case section.settings.speed %}
+  {% when 'fast' %}
+    {%- assign mobile_speed = 5 -%}
+    {%- assign desktop_speed = 10 -%}
+  {% when 'normal' %}
+    {%- assign mobile_speed = 10 -%}
+    {%- assign desktop_speed = 20 -%}
+  {% when 'slow' %}
+    {%- assign mobile_speed = 20 -%}
+    {%- assign desktop_speed = 30 -%}
+{% endcase %}
+
+{% style %}
+.marquee-underline{
+  text-decoration: none;
+}
+  
+.marquee--{{ section.id }} .marquee__text {
+  font-size: {{ section.settings.text_size }}px;
+  animation-duration: {{ desktop_speed }}s;
+}
+
+@media screen and (max-width: 768px) {
+.marquee--{{ section.id }} .marquee__text {
+  font-size: {{ section.settings.text_size | times: 0.6 }}px;
+  animation-duration: {{ mobile_speed }}s;
+  }
+}
+
+{% unless section.settings.text_spacing %}
+.marquee--{{ section.id }} .marquee__text span {
+  padding: 0;
+   }
+  {% endunless %}
+
+{% if section.settings.text_spacing == true %}
+.marquee--{{ section.id }} .marquee__text span {
+  padding: 0;
+  letter-spacing: .3rem;
+  }
+  {% endif %}
+
+{% endstyle %}
+
+<div class="marquee marquee--{{ section.id }}">
+
+  {% if section.settings.link != blank %}
+    <a class="marquee-underline" href="{{ section.settings.link }}">
+  {% endif %}
+  
+    <div class="marquee__container color-{{ section.settings.color_scheme }} gradient">
+      <div class="marquee__text marquee__text--{{ section.settings.direction }}">
+        <span>{{ section.settings.text }}</span>
+        <span aria-hidden="true">{{ section.settings.text }}</span>
+        <span aria-hidden="true">{{ section.settings.text }}</span>
+        <span aria-hidden="true">{{ section.settings.text }}</span>
+      </div>
+    </div>
+</div>
+
+  {% if section.settings.link != blank %}
+    </a>
+  {% endif %}
+
+{% schema %}
+  {
+    "name": "Scrolling text",
+    "class": "index-section--flush",
+    "settings": [
+      {
+        "type": "text",
+        "id": "text",
+        "label": "Text",
+        "default": "Free shipping and returns"
+      },
+      {
+        "type": "url",
+        "id": "link",
+        "label": "Link"
+      },
+      {
+        "type": "range",
+        "id": "text_size",
+        "label": "Text size",
+        "default": 70,
+        "min": 20,
+        "max": 150,
+        "step": 2,
+        "unit": "px"
+      },
+      {
+        "type": "checkbox",
+        "id": "text_spacing",
+        "label": "Add spacing",
+        "default": true
+      },
+      {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "accent-1",
+          "label": "t:sections.all.colors.accent_1.label"
+        },
+        {
+          "value": "accent-2",
+          "label": "t:sections.all.colors.accent_2.label"
+        },
+        {
+          "value": "background-1",
+          "label": "t:sections.all.colors.background_1.label"
+        },
+        {
+          "value": "background-2",
+          "label": "t:sections.all.colors.background_2.label"
+        },
+        {
+          "value": "inverse",
+          "label": "t:sections.all.colors.inverse.label"
+        }
+      ],
+      "default": "background-1",
+      "label": "t:sections.all.colors.label"
+    },
+      {
+        "type": "select",
+        "id": "direction",
+        "label": "Direction",
+        "default": "left",
+        "options": [
+          {
+            "label": "Left",
+            "value": "left"
+          },
+          {
+            "label": "Right",
+            "value": "right"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "speed",
+        "label": "Speed",
+        "default": "normal",
+        "options": [
+          {
+            "label": "Fast",
+            "value": "fast"
+          },
+          {
+            "label": "Normal",
+            "value": "normal"
+          },
+          {
+            "label": "Slow",
+            "value": "slow"
+          }
+        ]
+      }
+    ],
+    "presets": [{
+      "name": "Scrolling text",
+      "category": "Text"
+    }]
+  }
+{% endschema %}

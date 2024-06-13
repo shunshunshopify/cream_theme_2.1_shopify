@@ -1,0 +1,101 @@
+{
+  "sections": {
+    "9d9b9815-d6f2-4baa-939f-e81a967de3c7": {
+      "type": "collapsible-content",
+      "blocks": {
+        "template--17718451962141__9d9b9815-d6f2-4baa-939f-e81a967de3c7-1676038482362c1227-0": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "クーポンについて",
+            "icon": "check_mark",
+            "row_content": "<p>Solstar Online Shopでご利用いただけるクーポン（キャンペーンコード）は、会員登録されたSolstar Membersのお客様へ、メールマガジンやメンバーズアプリで不定期に発行いたします。<\/p>",
+            "page": ""
+          }
+        },
+        "template--17718451962141__9d9b9815-d6f2-4baa-939f-e81a967de3c7-1676038482362c1227-1": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "クーポンご利用方法",
+            "icon": "check_mark",
+            "row_content": "<p>1. 商品を選び、【カートに入れる】ボタンを押します。<\/p><p>2. カート画面で商品、数量を確認し、【ご購入手続きへ進む】ボタンを押します。<\/p><p>3. 「ご注文情報の入力」画面で配送先、雑貨商品または大型商品の付帯情報、配送希望日時の指定をします。<\/p><p>4. 下部のクーポンコード入力欄にクーポンコードを入力してください。※クーポンコードを入力する場合、半角英数字（表示どおり）ご入力ください。<\/p><p>5. 【次へ進む】ボタンを押します。「ご注文内容の確認」画面で、商品金額にクーポン割引が適用されているかご確認ください。<\/p><p>6. その他、お届け先情報や配送希望日時などご確認いただき、【お支払い情報に進む】ボタンを押します。<\/p><p>7. 「支払い」画面でお支払い方法を選択し、【ご注文完了】ボタンを押すと、クーポンを利用した注文が完了いたします。<\/p>",
+            "page": ""
+          }
+        },
+        "template--17718451962141__9d9b9815-d6f2-4baa-939f-e81a967de3c7-1676038482362c1227-2": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "配送料金について",
+            "icon": "check_mark",
+            "row_content": "<p>全国一律550円（税込）ですが、一回の雑貨の商品金額合計が15,000円（税込）以上の場合、送料無料で配送いたします。<\/p><ul><li>一会計での商品金額合計となります。別注文との合算はできません。<\/li><li>手数料、ラッピング料、付帯サービス料は商品金額に含みません。<\/li><li>クーポンをご利用時に、雑貨の商品金額合計15,000円（税込）未満の場合は送料が発生いたしますのでご注意ください。<\/li><li>配送地域や配送状況により、追加で配送料が発生し別途ご請求させていただく場合がございます。<\/li><\/ul>",
+            "page": ""
+          }
+        },
+        "template--17718451962141__9d9b9815-d6f2-4baa-939f-e81a967de3c7-1676038482362c1227-3": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "在庫について",
+            "icon": "check_mark",
+            "row_content": "<p>商品の在庫がある場合、商品画面に【カートに入れる】ボタンが表示されます。<\/p><p>在庫が少量の場合、【カートに入れる】ボタンの右上に「在庫残りわずか」のマークが表示され、在庫が無くなると【入荷通知を受け取る】ボタン、または、【SOLD OUT】ボタンが表示されます。<\/p><p>ショッピングカートに入れた時点では、商品在庫は確保されておりませんのでご注意ください。 <\/p><p> <\/p><p>商品画像の上にある【♡】ボタンを押すと、マイページ『お気に入りリスト』へ追加され、在庫が入荷されると、お気に入り商品一覧から直接カートに入れることができます。 <\/p>",
+            "page": ""
+          }
+        },
+        "bdca91c9-db54-44ee-b62e-0b8b02a2dc7b": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "退会について",
+            "icon": "check_mark",
+            "row_content": "<p><strong>【アカウント退会をご希望のお客様へ】<\/strong><\/p><p>下記のフォームに削除されるアカウントのメールアドレス及び、削除ご希望の旨ご記載の上、ご送信ください。<br\/>アカウント削除完了まで数日お時間を頂く場合がございます。<br\/>（未完了のご注文取引がある場合は、取引完了後にアカウントの削除をご依頼お願い申し上げます。）<\/p>",
+            "page": ""
+          }
+        }
+      },
+      "block_order": [
+        "template--17718451962141__9d9b9815-d6f2-4baa-939f-e81a967de3c7-1676038482362c1227-0",
+        "template--17718451962141__9d9b9815-d6f2-4baa-939f-e81a967de3c7-1676038482362c1227-1",
+        "template--17718451962141__9d9b9815-d6f2-4baa-939f-e81a967de3c7-1676038482362c1227-2",
+        "template--17718451962141__9d9b9815-d6f2-4baa-939f-e81a967de3c7-1676038482362c1227-3",
+        "bdca91c9-db54-44ee-b62e-0b8b02a2dc7b"
+      ],
+      "settings": {
+        "caption": "Solstar Online",
+        "heading": "よくあるご質問",
+        "heading_size": "h1",
+        "heading_alignment": "center",
+        "layout": "row",
+        "color_scheme": "background-1",
+        "container_color_scheme": "background-2",
+        "open_first_collapsible_row": false,
+        "image_ratio": "adapt",
+        "desktop_layout": "image_second",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "custom_css": [
+        "h1 {font-size: 3rem;}"
+      ],
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 0
+      }
+    },
+    "form": {
+      "type": "contact-form",
+      "settings": {
+        "heading": "お困りですか？ご質問等ございましたらお気軽にご連絡ください。",
+        "heading_size": "h2",
+        "color_scheme": "background-1",
+        "padding_top": 0,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "9d9b9815-d6f2-4baa-939f-e81a967de3c7",
+    "main",
+    "form"
+  ]
+}

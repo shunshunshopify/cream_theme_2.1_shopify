@@ -1,0 +1,414 @@
+{
+  "sections": {
+    "8625c205-a926-4d83-b86c-f05cb5bb8ca4": {
+      "type": "hero-video",
+      "settings": {
+        "title": "Bring the beach with you",
+        "title_size": 51,
+        "subheading": "Salty Collection",
+        "link_text": "コレクションを見る",
+        "button_style_secondary_1": true,
+        "link": "shopify:\/\/collections\/constellation-collection",
+        "text_align": "vertical-center horizontal-center",
+        "text_animation": true,
+        "video_url": "https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/a69d3f51a82441979bf7ca5c73751665.mp4",
+        "overlay_opacity": 0,
+        "section_height": "16-9",
+        "mobile_height": "500px"
+      }
+    },
+    "image_banner": {
+      "type": "image-banner",
+      "blocks": {
+        "f3b0ce19-021c-42f2-986d-63f1d6ef72a0": {
+          "type": "heading",
+          "settings": {
+            "heading": "Salty Collection",
+            "heading_size": "h1"
+          }
+        },
+        "c2bcb2b8-c43a-40fb-8e36-30cc2cf791b7": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "コレクションを見る",
+            "button_link_1": "shopify:\/\/collections\/salty-collection",
+            "button_style_secondary_1": true,
+            "button_label_2": "",
+            "button_link_2": "shopify:\/\/collections\/constellation-collection",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "f3b0ce19-021c-42f2-986d-63f1d6ef72a0",
+        "c2bcb2b8-c43a-40fb-8e36-30cc2cf791b7"
+      ],
+      "custom_css": [
+
+      ],
+      "settings": {
+        "image": "shopify:\/\/shop_images\/Bikini_Image_2.webp",
+        "image_2": "shopify:\/\/shop_images\/One_Piece_Image.webp",
+        "image_overlay_opacity": 0,
+        "image_height": "small",
+        "desktop_content_position": "middle-center",
+        "show_text_box": false,
+        "desktop_content_alignment": "center",
+        "color_scheme": "background-1",
+        "image_behavior": "none",
+        "mobile_content_alignment": "center",
+        "stack_images_on_mobile": false,
+        "show_text_below": false
+      }
+    },
+    "2717844e-1f7c-4665-8c4d-7ed24eec28a7": {
+      "type": "marquee-text",
+      "settings": {
+        "text": "・New Collection・New Collection・New Collection・New Collection・New Collection",
+        "link": "shopify:\/\/collections\/salty-collection",
+        "text_size": 20,
+        "text_spacing": false,
+        "color_scheme": "inverse",
+        "direction": "left",
+        "speed": "slow"
+      }
+    },
+    "rich_text": {
+      "type": "rich-text",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "heading": "<p>The One by Sandy Haze<\/p>",
+            "heading_size": "h1"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>夏の思い出は、人生を彩る宝物。Sandy Hazeで自分らしい水着を手に入れて、夏の輝きを存分に楽しもう！<\/p>"
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "text"
+      ],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "background-1",
+        "full_width": true,
+        "padding_top": 52,
+        "padding_bottom": 52
+      }
+    },
+    "featured_collection": {
+      "type": "featured-collection",
+      "custom_css": [
+        "h2 {font-weight: bold;}"
+      ],
+      "settings": {
+        "title": "ベストセラー",
+        "heading_size": "h2",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "collection": "salty-collection",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "outline",
+        "enable_desktop_slider": true,
+        "color_scheme": "background-1",
+        "image_ratio": "adapt",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": true,
+        "enable_quick_add": true,
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 28,
+        "padding_bottom": 36
+      }
+    },
+    "collage": {
+      "type": "collage",
+      "blocks": {
+        "785ceb56-10f6-4775-b5dd-77daab4a0d58": {
+          "type": "collection",
+          "settings": {
+            "collection": "constellation-collection"
+          }
+        },
+        "collection-0": {
+          "type": "collection",
+          "settings": {
+            "collection": "salty-collection"
+          }
+        },
+        "collection-1": {
+          "type": "collection",
+          "settings": {
+            "collection": "walk-collection"
+          }
+        }
+      },
+      "block_order": [
+        "785ceb56-10f6-4775-b5dd-77daab4a0d58",
+        "collection-0",
+        "collection-1"
+      ],
+      "custom_css": [
+        "h2 {font-weight: bold;}"
+      ],
+      "settings": {
+        "heading": "最新コレクション",
+        "heading_size": "h2",
+        "desktop_layout": "right",
+        "mobile_layout": "collage",
+        "card_styles": "product-card-wrapper",
+        "color_scheme": "background-1",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "7f4aa034-2ab4-4299-9da8-db205b32e6a9": {
+      "type": "featured-blog",
+      "custom_css": [
+        "h2 {font-weight: bold;}"
+      ],
+      "settings": {
+        "heading": "Solstar Blog",
+        "heading_size": "h2",
+        "blog": "news",
+        "post_limit": 3,
+        "columns_desktop": 3,
+        "color_scheme": "background-1",
+        "show_image": true,
+        "show_date": true,
+        "show_author": false,
+        "show_view_all": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "1948d012-6aee-4e43-81df-30100e6a7ac0": {
+      "type": "collapsible-content",
+      "blocks": {
+        "template--17632078168349__1948d012-6aee-4e43-81df-30100e6a7ac0-167454728847d69200-0": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "メンバーシッププログラムとは何ですか？",
+            "icon": "none",
+            "row_content": "<p>会員登録した方はメンバーシッププログラム“Solstar membership”に自動的に登録されます。詳細は<a href=\"https:\/\/ohora.co.jp\/pages\/member\" title=\"https:\/\/ohora.co.jp\/pages\/member\">こちら<\/a><\/p>",
+            "page": ""
+          }
+        },
+        "template--17632078168349__1948d012-6aee-4e43-81df-30100e6a7ac0-167454728847d69200-1": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "会員ステージはどこで確認できますか？",
+            "icon": "none",
+            "row_content": "<p>ログインして、画面左下のプレゼントマークのボタンを押すと確認できます。【MY STAGE！】が現在のあなたのステージです。<\/p>",
+            "page": ""
+          }
+        },
+        "template--17632078168349__1948d012-6aee-4e43-81df-30100e6a7ac0-167454728847d69200-2": {
+          "type": "collapsible_row",
+          "settings": {
+            "heading": "どうしたら会員ステージは上がりますか？",
+            "icon": "none",
+            "row_content": "<p><a href=\"https:\/\/ohora.co.jp\/pages\/member#member-benefits_02\" title=\"https:\/\/ohora.co.jp\/pages\/member#member-benefits_02\">こちら<\/a>からご確認ください。<\/p>",
+            "page": ""
+          }
+        }
+      },
+      "block_order": [
+        "template--17632078168349__1948d012-6aee-4e43-81df-30100e6a7ac0-167454728847d69200-0",
+        "template--17632078168349__1948d012-6aee-4e43-81df-30100e6a7ac0-167454728847d69200-1",
+        "template--17632078168349__1948d012-6aee-4e43-81df-30100e6a7ac0-167454728847d69200-2"
+      ],
+      "settings": {
+        "caption": "Solstar Online",
+        "heading": "よくあるご質問",
+        "heading_size": "h2",
+        "heading_alignment": "center",
+        "layout": "none",
+        "color_scheme": "background-2",
+        "container_color_scheme": "background-2",
+        "open_first_collapsible_row": false,
+        "image_ratio": "adapt",
+        "desktop_layout": "image_second",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "marquee_text_Ny9MbB": {
+      "type": "marquee-text",
+      "settings": {
+        "text": "SALE SALE SALE",
+        "link": "",
+        "text_size": 70,
+        "text_spacing": false,
+        "color_scheme": "accent-1",
+        "direction": "right",
+        "speed": "normal"
+      }
+    },
+    "be105a26-66cf-44ea-91ca-eaefc4969c3e": {
+      "type": "slideshow-nextgen",
+      "blocks": {
+        "7cd2ff87-2cbf-4f31-be88-1e0f9f3a6082": {
+          "type": "hero",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/Swimsuit_Hero_Image_PC_3.webp",
+            "image_mobile": "shopify:\/\/shop_images\/IMG_1629_Original_copy.webp",
+            "desktop_content_position": "middle-right",
+            "color_scheme": "background-1",
+            "mobile_content_alignment": "left",
+            "heading": "Salty Collection",
+            "heading_size": "h0",
+            "text": "Give customers details about the banner image(s) or content on the template.",
+            "text_style": "body",
+            "button_label_1": "Discover Collection",
+            "button_link_1": "shopify:\/\/collections\/constellation-collection",
+            "button_style_secondary_1": true
+          }
+        },
+        "c83aaa5f-256d-4a57-ae7a-ebdca052dd51": {
+          "type": "hero",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/blog_about_bikini.webp",
+            "image_mobile": "shopify:\/\/shop_images\/Blog_about_swimsuit.jpg",
+            "desktop_content_position": "bottom-right",
+            "color_scheme": "background-1",
+            "mobile_content_alignment": "center",
+            "heading": "Image banner",
+            "heading_size": "h1",
+            "text": "Give customers details about the banner image(s) or content on the template.",
+            "text_style": "body",
+            "button_label_1": "Button label",
+            "button_link_1": "",
+            "button_style_secondary_1": true
+          }
+        },
+        "hero_8NfBme": {
+          "type": "hero",
+          "settings": {
+            "image": "shopify:\/\/shop_images\/model-laughs-barefoot.jpg",
+            "image_mobile": "shopify:\/\/shop_images\/sara-dabaghian-PYaoN4x4uTY-unsplash_1.jpg",
+            "desktop_content_position": "middle-center",
+            "color_scheme": "background-1",
+            "mobile_content_alignment": "center",
+            "heading": "Image banner",
+            "heading_size": "h1",
+            "text": "Give customers details about the banner image(s) or content on the template.",
+            "text_style": "body",
+            "button_label_1": "Button label",
+            "button_link_1": "",
+            "button_style_secondary_1": true
+          }
+        }
+      },
+      "block_order": [
+        "7cd2ff87-2cbf-4f31-be88-1e0f9f3a6082",
+        "c83aaa5f-256d-4a57-ae7a-ebdca052dd51",
+        "hero_8NfBme"
+      ],
+      "settings": {
+        "section_height": "100vh",
+        "show_text_box": false,
+        "section_height_mobile": "500px",
+        "show_text_below": false,
+        "text_animation": true,
+        "fade": false,
+        "zoom_animation": true
+      }
+    },
+    "a5d9a389-66bb-4896-bc91-42d39b6160cb": {
+      "type": "testimonial",
+      "blocks": {
+        "template--18502875709725__a5d9a389-66bb-4896-bc91-42d39b6160cb-168204397938c1ccd8-1": {
+          "type": "block",
+          "settings": {
+            "title": "簡単！きれい♡",
+            "title_size": "h3",
+            "show_stars": true,
+            "star_count": 5,
+            "description": "<p>ネイビーが綺麗ですし<br\/>黒にシルバーのラインが個性的で<br\/>今までにないデザインが<br\/>とても気に入りました♬<\/p>",
+            "author_img": "shopify:\/\/shop_images\/woman-wearing-aviator-glasses.jpg",
+            "author_name": "かな"
+          }
+        },
+        "template--18502875709725__a5d9a389-66bb-4896-bc91-42d39b6160cb-168204397938c1ccd8-2": {
+          "type": "block",
+          "settings": {
+            "title": "可愛さ満点！",
+            "title_size": "h3",
+            "show_stars": true,
+            "star_count": 5,
+            "description": "<p>手先から甘さが溢れ出てました。<br\/>控えめで女性らしい色合いだと思います。<\/p>",
+            "author_img": "shopify:\/\/shop_images\/two-nail-polishes-on-pink.jpg",
+            "author_name": "かのん"
+          }
+        },
+        "template--18502875709725__a5d9a389-66bb-4896-bc91-42d39b6160cb-168204397938c1ccd8-3": {
+          "type": "block",
+          "settings": {
+            "title": "シンプル綺麗",
+            "title_size": "h3",
+            "show_stars": true,
+            "star_count": 5,
+            "description": "<p>ナチュラルで爪が綺麗にみえます。<br\/>全面一色じゃなく根本にほんのりグラデがかかっててかわいい。むしろもっとグラデ強くても全然アリ！<\/p>",
+            "author_img": "shopify:\/\/shop_images\/high-fashion-fingers.jpg",
+            "author_name": "ふわふわ"
+          }
+        }
+      },
+      "block_order": [
+        "template--18502875709725__a5d9a389-66bb-4896-bc91-42d39b6160cb-168204397938c1ccd8-1",
+        "template--18502875709725__a5d9a389-66bb-4896-bc91-42d39b6160cb-168204397938c1ccd8-2",
+        "template--18502875709725__a5d9a389-66bb-4896-bc91-42d39b6160cb-168204397938c1ccd8-3"
+      ],
+      "settings": {
+        "color_scheme": "background-1",
+        "text_align": "center",
+        "title": "お客様の声",
+        "heading_size": "h1",
+        "description": "<p>Description is here.<\/p>",
+        "carousel_arrows": true,
+        "carousel_pagination": true,
+        "carousel_easing": "cubic-bezier(.42,.65,.27,.99)",
+        "carousel_speed": 300,
+        "carousel_autoplay": false,
+        "carousel_interval": 6,
+        "carousel_per_move": 1,
+        "breakpoint_mobile": 1,
+        "breakpoint_tablet": 2,
+        "breakpoint_desktop": 3,
+        "btn_text": "View All",
+        "btn_url": "shopify:\/\/pages\/te-ding-shang-qu-yin-fa-biao-shi",
+        "button_style_secondary_1": true,
+        "pt": 0,
+        "pb": 0,
+        "mt": 0,
+        "mb": 0
+      }
+    }
+  },
+  "order": [
+    "8625c205-a926-4d83-b86c-f05cb5bb8ca4",
+    "image_banner",
+    "2717844e-1f7c-4665-8c4d-7ed24eec28a7",
+    "rich_text",
+    "featured_collection",
+    "collage",
+    "7f4aa034-2ab4-4299-9da8-db205b32e6a9",
+    "1948d012-6aee-4e43-81df-30100e6a7ac0",
+    "marquee_text_Ny9MbB",
+    "be105a26-66cf-44ea-91ca-eaefc4969c3e",
+    "a5d9a389-66bb-4896-bc91-42d39b6160cb"
+  ]
+}
