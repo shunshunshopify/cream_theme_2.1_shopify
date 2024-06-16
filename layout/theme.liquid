@@ -376,6 +376,38 @@ a > span,  .mega-menu__list .mega-menu__link > font{
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
 
 
+{%- # Organization; https://developers.google.com/search/docs/appearance/structured-data/organization -%}
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": {{ shop.name | json }},
+  {% if settings.splash_logo %}
+    "logo": {{ settings.splash_logo | image_url: width: settings.splash_logo.width | prepend: "https:" | json }},
+  {% endif %}
+  {%- capture social_links %}{{ settings.social_twitter_link }},{{ settings.social_facebook_link }},{{ settings.social_pinterest_link }},{{ settings.social_instagram_link }},{{ settings.social_tiktok_link }},{{ settings.social_tumblr_link }},{{ settings.social_snapchat_link }},{{ settings.social_youtube_link }},{{ settings.social_vimeo_link }}{%- endcapture -%}
+  "sameAs": {{ social_links | split: "," | compact | json }},
+  "url": {{ request.origin | append: page.url | json }}
+}
+</script>
+
+{%- if request.page_type == 'index' -%}
+{%- # Sitelinks search box; https://developers.google.com/search/docs/appearance/structured-data/sitelinks-searchbox -%}
+{%- assign potential_action_target = request.origin | append: routes.search_url | append: "?q={search_term_string}" -%}
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "WebSite",
+  "name": {{ shop.name | json }},
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {{ potential_action_target | json }},
+    "query-input": "required name=search_term_string"
+  },
+  "url": {{ request.origin | append: page.url | json }}
+}
+</script>
+{%- endif -%}
 
 </head>
 

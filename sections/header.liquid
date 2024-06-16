@@ -1,3 +1,4 @@
+
 <link rel="preload" href="{{ 'component-list-menu.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript>{{ 'component-list-menu.css' | asset_url | stylesheet_tag }}</noscript>
 <link rel="preload" href="{{ 'component-search.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -293,17 +294,17 @@
       // Get the root element
       const r = document.querySelector(':root');
       const rs = getComputedStyle(r);
-      var announcementHeight = parseFloat(rs.getPropertyValue('--announcement-height').replace(/px$/, ''));
+      var announcementHeight = parseFloat(rs.getPropertyValue('--announcement-height'));
 
       const announcementBar = document.querySelector('#shopify-section-announcement-bar');
       if (announcementBar) {
         announcementHeight = getComputedStyle(announcementBar).height;
-        announcementHeight = parseFloat(announcementHeight.replace(/px$/, ''));
+        announcementHeight = parseFloat(announcementHeight);
       }
 
       const headerWrapperSticky = document.querySelector("sticky-header.header-wrapper")
       var headerHeight = getComputedStyle(headerWrapperSticky).height;
-      headerHeight = parseFloat(headerHeight.replace(/px$/, ''));
+      headerHeight = parseFloat(headerHeight);
 
       const marginTopForBody = headerHeight;
 
@@ -318,8 +319,7 @@
           headerWrapperSticky.style.setProperty('top', '0px', 'important');
         } else {
           const topDifference = announcementHeight - scrollY;
-          const topValue = topDifference + "px";
-          headerWrapperSticky.style.setProperty('top', topValue, 'important');
+          headerWrapperSticky.style.setProperty('top', `${topDifference}px`, 'important');
         }
       }
       adjust();
@@ -331,7 +331,7 @@
       {% if section.settings.enable_blur %}
       headerWrapperBackground.style.setProperty('opacity', "0%", 'important');
       {% else %}
-      const top  = pageYOffset || document.documentElement.scrollTop;
+      const top = pageYOffset || document.documentElement.scrollTop;
       if (top <= announceHeight) {
         headerWrapperBackground.style.setProperty('opacity', "0%", 'important');
       } else {
@@ -344,7 +344,7 @@
       const headerBar = document.querySelector('.header-wrapper'); 
       const breadcrumbs = document.querySelector('.breadcrumbs');
       const mainContent = document.querySelector('.MainContent');
-      const headerHeight = parseInt(getComputedStyle(headerBar).getPropertyValue('height'));
+      const headerHeight = parseInt(getComputedStyle(headerBar).height);
       if (breadcrumbs) {
         breadcrumbs.style.setProperty('margin-top', `${headerHeight}px`, 'important');
       } else {
@@ -358,7 +358,7 @@
           const announcementBar = document.querySelector('#shopify-section-announcement-bar');
           let announceHeight = 0;
           if (announcementBar) {
-            announceHeight = parseInt(getComputedStyle(announcementBar).getPropertyValue('height'));
+            announceHeight = parseInt(getComputedStyle(announcementBar).height);
           }
 
           overlayAdjust(announceHeight);
@@ -371,29 +371,30 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       const headerBar = document.querySelector('.header-wrapper'); 
-      let overlayEnabled = headerBar.dataset.overlay == 'true';
-
+      const overlayEnabled = headerBar.dataset.overlay == 'true';
       headerAdjust(overlayEnabled);
       overlayMod(overlayEnabled);
 
       window.addEventListener('resize', () => headerAdjust(overlayEnabled));
-
-      document.addEventListener('shopify:section:load', function() {
-        const r = document.querySelector(':root');
-        r.style.setProperty('--body-margin', "0px");
-        let overlayEnabled = headerBar.dataset.overlay == 'true';
-
-        setTimeout(() => headerAdjust(overlayEnabled), 500);
-
-        const headerBar = document.querySelector('.header-wrapper');
-
-        overlayMod(overlayEnabled);
-        console.log("section: reloader");
-      });
-
-      document.addEventListener('shopify:section:select', () => headerAdjust(overlayEnabled));
-
     });
+
+    {% if request.design_mode %}
+    document.addEventListener('shopify:section:load', () => {
+      const r = document.querySelector(':root');
+      r.style.setProperty('--body-margin', "0px");
+
+      const headerBar = document.querySelector('.header-wrapper'); 
+      const overlayEnabled = headerBar.dataset.overlay == 'true';
+      headerAdjust(overlayEnabled);
+      overlayMod(overlayEnabled);
+    });
+
+    document.addEventListener('shopify:section:select', () => {
+      const headerBar = document.querySelector('.header-wrapper'); 
+      const overlayEnabled = headerBar.dataset.overlay == 'true';
+      headerAdjust(overlayEnabled);
+    });
+    {% endif %}
   </script>
 
   <style>
@@ -929,40 +930,6 @@
   {%- render 'cart-notification', color_scheme: section.settings.color_scheme -%}
 {%- endif -%}
 
-{%- # TODO: Consider defining structured data in the right place  but not in header section. -%}
-{%- # Organization; https://developers.google.com/search/docs/appearance/structured-data/organization -%}
-<script type="application/ld+json">
-  {
-    "@context": "http://schema.org",
-    "@type": "Organization",
-    "name": {{ shop.name | json }},
-    {% if section.settings.logo %}
-      "logo": {{ section.settings.logo | image_url: width: section.settings.logo.width | prepend: "https:" | json }},
-    {% endif %}
-    {%- capture social_links %}{{ settings.social_twitter_link }},{{ settings.social_facebook_link }},{{ settings.social_pinterest_link }},{{ settings.social_instagram_link }},{{ settings.social_tiktok_link }},{{ settings.social_tumblr_link }},{{ settings.social_snapchat_link }},{{ settings.social_youtube_link }},{{ settings.social_vimeo_link }}{%- endcapture -%}
-    "sameAs": {{ social_links | split: "," | compact | json }},
-    "url": {{ request.origin | append: page.url | json }}
-  }
-</script>
-
-{%- if request.page_type == 'index' -%}
-  {%- # Sitelinks search box; https://developers.google.com/search/docs/appearance/structured-data/sitelinks-searchbox -%}
-   {%- assign potential_action_target = request.origin | append: routes.search_url | append: "?q={search_term_string}" -%}
-  <script type="application/ld+json">
-    {
-      "@context": "http://schema.org",
-      "@type": "WebSite",
-      "name": {{ shop.name | json }},
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {{ potential_action_target | json }},
-        "query-input": "required name=search_term_string"
-      },
-      "url": {{ request.origin | append: page.url | json }}
-    }
-  </script>
-{%- endif -%}
-
 <script>
   {% if section.settings.enable_blur %}
     document.addEventListener("DOMContentLoaded", () => {
@@ -976,7 +943,7 @@
 
         function setColorsForBlur(alpha) {
           // Get the computed background value
-          const computedBackground = getComputedStyle(headerWrapperBackground).getPropertyValue('background');
+          const computedBackground = getComputedStyle(headerWrapperBackground).background;
 
           // Check if the computed background includes a linear gradient
           if (computedBackground.includes('linear-gradient(')) {
@@ -1025,7 +992,7 @@
           detailsHead.querySelector("summary").ariaExpanded = false;
           const top = pageYOffset || document.documentElement.scrollTop;
           const announcementBar = document.querySelector('#shopify-section-announcement-bar');
-          const announceHeight = announcementBar ? parseInt(getComputedStyle(announcementBar).getPropertyValue('height')) : 0;
+          const announceHeight = announcementBar ? parseInt(getComputedStyle(announcementBar).height) : 0;
           if (top <= announceHeight) {
             headerWrapperBackground.style.setProperty('opacity', "0%", 'important');
           }
@@ -1056,10 +1023,12 @@
         });
       }
 
-      headerBlur()
+      headerBlur();
+      {% if request.design_mode %}
       document.addEventListener('shopify:section:load', (e) => {
         headerBlur();
       });
+      {% endif %}
     });
   {% endif %}
 </script>
