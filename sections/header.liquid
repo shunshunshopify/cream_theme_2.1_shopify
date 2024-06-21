@@ -990,13 +990,8 @@
         function collapseHeaderMenu2() {
           detailsHead.open = false;
           detailsHead.querySelector("summary").ariaExpanded = false;
-          const top = pageYOffset || document.documentElement.scrollTop;
-          const announcementBar = document.querySelector('#shopify-section-announcement-bar');
-          const announceHeight = announcementBar ? parseInt(getComputedStyle(announcementBar).height) : 0;
-          if (top <= announceHeight) {
-            headerWrapperBackground.style.setProperty('opacity', "0%", 'important');
-          }
           adjustBlurWhenOpen(0);
+          headerWrapperBackground.style.setProperty('opacity', "0%", 'important');
         }
 
         function scheduleCollapseHeaderMenu2(timeout = 500) {
