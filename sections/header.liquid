@@ -181,6 +181,16 @@
     .header-wrapper{
       background: linear-gradient(270deg, rgba(240, 110, 105, 0), rgba(249, 208, 163, 0) 100%) !important;
       background-color: rgba(var(--color-background), 0) !important;
+      transition: background-color 300ms ease, background 300ms ease;
+    }
+
+    .header-wrapper[data-blur="false"].header-wrapper--overlay-visible {
+      background-color: rgba(var(--color-background), 0.92) !important;
+    }
+  {% endif %}
+  {% if section.settings.enable_blur %}
+    .header-wrapper[data-blur="true"] .header-background {
+      opacity: 0 !important;
     }
   {% endif %}
 {%- endstyle -%}
@@ -290,110 +300,172 @@
 
     customElements.define('sticky-header', StickyHeader);
 
-    function headerAdjust(overlayEnabled) {
-      // Get the root element
-      const r = document.querySelector(':root');
-      const rs = getComputedStyle(r);
-      var announcementHeight = parseFloat(rs.getPropertyValue('--announcement-height'));
+    const CLASS_NAMES = {
+      overlayVisible: 'header-wrapper--overlay-visible'
+    };
 
-      const announcementBar = document.querySelector('#shopify-section-announcement-bar');
+    const SELECTORS = {
+      headerWrapper: '.header-wrapper',
+      stickyHeader: 'sticky-header.header-wrapper',
+      headerBackground: '.header-wrapper .header-background',
+      announcementBar: '#shopify-section-announcement-bar',
+      breadcrumbs: '.breadcrumbs',
+      mainContent: '.MainContent'
+    };
+
+    const state = {
+      headerScrollHandler: null,
+      overlayScrollHandler: null,
+      resizeAttached: false
+    };
+
+    const isHomeTemplate = {{ template == 'index' | json }};
+
+    const getAnnouncementHeight = () => {
+      const announcementBar = document.querySelector(SELECTORS.announcementBar);
       if (announcementBar) {
-        announcementHeight = getComputedStyle(announcementBar).height;
-        announcementHeight = parseFloat(announcementHeight);
+        const { height } = announcementBar.getBoundingClientRect();
+        if (height) return height;
+
+        const barHeight = parseFloat(getComputedStyle(announcementBar).height);
+        if (!Number.isNaN(barHeight)) return barHeight;
       }
 
-      const headerWrapperSticky = document.querySelector("sticky-header.header-wrapper")
-      var headerHeight = getComputedStyle(headerWrapperSticky).height;
-      headerHeight = parseFloat(headerHeight);
+      const rootStyles = getComputedStyle(document.documentElement);
+      const fallbackHeight = parseFloat(rootStyles.getPropertyValue('--announcement-height'));
 
-      const marginTopForBody = headerHeight;
+      return Number.isNaN(fallbackHeight) ? 0 : fallbackHeight;
+    };
 
-      {% if template == 'index' %}
-        if (!overlayEnabled) {
-          r.style.setProperty('--body-margin', `${marginTopForBody}px`);
-        }
-      {% endif %}
-
-      function adjust() {
-        if (scrollY > announcementHeight) {
-          headerWrapperSticky.style.setProperty('top', '0px', 'important');
-        } else {
-          const topDifference = announcementHeight - scrollY;
-          headerWrapperSticky.style.setProperty('top', `${topDifference}px`, 'important');
-        }
+    const setScrollHandler = (property, handler) => {
+      if (state[property]) {
+        document.removeEventListener('scroll', state[property]);
       }
-      adjust();
-      document.addEventListener('scroll', () => adjust());
-    }
 
-    function overlayAdjust(announceHeight) {
-      const headerWrapperBackground = document.querySelector(".header-wrapper .header-background");
-      {% if section.settings.enable_blur %}
-      headerWrapperBackground.style.setProperty('opacity', "0%", 'important');
-      {% else %}
-      const top = pageYOffset || document.documentElement.scrollTop;
-      if (top <= announceHeight) {
-        headerWrapperBackground.style.setProperty('opacity', "0%", 'important');
-      } else {
-        headerWrapperBackground.style.setProperty('opacity', "100%", 'important');
+      state[property] = handler;
+
+      if (handler) {
+        document.addEventListener('scroll', handler, { passive: true });
       }
-      {% endif %}
-    }
+    };
 
-    function overlayMargin() {
-      const headerBar = document.querySelector('.header-wrapper'); 
-      const breadcrumbs = document.querySelector('.breadcrumbs');
-      const mainContent = document.querySelector('.MainContent');
-      const headerHeight = parseInt(getComputedStyle(headerBar).height);
-      if (breadcrumbs) {
-        breadcrumbs.style.setProperty('margin-top', `${headerHeight}px`, 'important');
-      } else {
-        mainContent.style.setProperty('margin-top', `${headerHeight}px`, 'important');
+    const clearContentMargin = () => {
+      const target = document.querySelector(SELECTORS.breadcrumbs) || document.querySelector(SELECTORS.mainContent);
+      if (!target) return;
+
+      target.style.removeProperty('margin-top');
+    };
+
+    const applyContentMargin = headerHeight => {
+      const target = document.querySelector(SELECTORS.breadcrumbs) || document.querySelector(SELECTORS.mainContent);
+      if (!target) return;
+
+      target.style.setProperty('margin-top', `${headerHeight}px`, 'important');
+    };
+
+    const syncHeaderOffset = (headerWrapper, overlayEnabled) => {
+      if (!headerWrapper) return;
+
+      const updateOffset = () => {
+        const announcementHeight = getAnnouncementHeight();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const offset = scrollTop > announcementHeight ? 0 : announcementHeight - scrollTop;
+
+        headerWrapper.style.setProperty('top', `${offset}px`, 'important');
+      };
+
+      updateOffset();
+      setScrollHandler('headerScrollHandler', updateOffset);
+
+      if (isHomeTemplate) {
+        const rootElement = document.documentElement;
+        const headerHeight = headerWrapper.getBoundingClientRect().height;
+        const marginValue = overlayEnabled ? '0px' : `${headerHeight}px`;
+
+        rootElement.style.setProperty('--body-margin', marginValue);
       }
-    }
+    };
 
-    function overlayMod(overlayEnabled) {
-      if (overlayEnabled) {
-        {% if template == 'index' %}
-          const announcementBar = document.querySelector('#shopify-section-announcement-bar');
-          let announceHeight = 0;
-          if (announcementBar) {
-            announceHeight = parseInt(getComputedStyle(announcementBar).height);
+    const syncOverlayBackground = (headerWrapper, overlayEnabled) => {
+      const headerBackground = headerWrapper ? headerWrapper.querySelector(SELECTORS.headerBackground) : null;
+      const blurEnabled = headerWrapper ? headerWrapper.dataset.blur === 'true' : false;
+
+      if (!headerWrapper) return;
+
+      if (!overlayEnabled) {
+        headerWrapper.classList.remove(CLASS_NAMES.overlayVisible);
+        setScrollHandler('overlayScrollHandler', null);
+
+        if (headerBackground) {
+          if (blurEnabled) {
+            headerBackground.style.setProperty('opacity', '0%', 'important');
+          } else {
+            headerBackground.style.removeProperty('opacity');
           }
+        }
 
-          overlayAdjust(announceHeight);
-          document.addEventListener('scroll', () => overlayAdjust(announceHeight));
-        {% else %}
-          overlayMargin();
-        {% endif %}
+        return;
       }
-    }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const headerBar = document.querySelector('.header-wrapper'); 
-      const overlayEnabled = headerBar.dataset.overlay == 'true';
-      headerAdjust(overlayEnabled);
-      overlayMod(overlayEnabled);
+      const updateOverlayState = () => {
+        const scrolledPastTop = (window.pageYOffset || document.documentElement.scrollTop) > 0;
 
-      window.addEventListener('resize', () => headerAdjust(overlayEnabled));
-    });
+        headerWrapper.classList.toggle(CLASS_NAMES.overlayVisible, scrolledPastTop);
+
+        if (!headerBackground) return;
+
+        if (blurEnabled) {
+          headerBackground.style.setProperty('opacity', '0%', 'important');
+          return;
+        }
+
+        headerBackground.style.setProperty('opacity', scrolledPastTop ? '100%' : '0%', 'important');
+      };
+
+      updateOverlayState();
+      setScrollHandler('overlayScrollHandler', updateOverlayState);
+    };
+
+    const syncOverlayMargin = (headerWrapper, overlayEnabled) => {
+      if (!headerWrapper) return;
+
+      if (overlayEnabled && isHomeTemplate) {
+        clearContentMargin();
+        return;
+      }
+
+      applyContentMargin(headerWrapper.getBoundingClientRect().height);
+    };
+
+    const refreshHeader = () => {
+      const headerWrapper = document.querySelector(SELECTORS.stickyHeader);
+      if (!headerWrapper) return;
+
+      const overlayEnabled = headerWrapper.dataset.overlay === 'true';
+
+      syncHeaderOffset(headerWrapper, overlayEnabled);
+      syncOverlayBackground(headerWrapper, overlayEnabled);
+      syncOverlayMargin(headerWrapper, overlayEnabled);
+    };
+
+    const initializeHeader = () => {
+      refreshHeader();
+
+      if (!state.resizeAttached) {
+        window.addEventListener('resize', refreshHeader);
+        state.resizeAttached = true;
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', initializeHeader);
 
     {% if request.design_mode %}
-    document.addEventListener('shopify:section:load', () => {
-      const r = document.querySelector(':root');
-      r.style.setProperty('--body-margin', "0px");
+      document.addEventListener('shopify:section:load', () => {
+        document.documentElement.style.setProperty('--body-margin', '0px');
+        refreshHeader();
+      });
 
-      const headerBar = document.querySelector('.header-wrapper'); 
-      const overlayEnabled = headerBar.dataset.overlay == 'true';
-      headerAdjust(overlayEnabled);
-      overlayMod(overlayEnabled);
-    });
-
-    document.addEventListener('shopify:section:select', () => {
-      const headerBar = document.querySelector('.header-wrapper'); 
-      const overlayEnabled = headerBar.dataset.overlay == 'true';
-      headerAdjust(overlayEnabled);
-    });
+      document.addEventListener('shopify:section:select', refreshHeader);
     {% endif %}
   </script>
 
@@ -937,8 +1009,8 @@
         const detailsHead = document.querySelector('#Details-HeaderMenu-2');
         const megaHead = document.querySelector('#MegaMenu-Content-2');
         const headerWrapperBackground = document.querySelector(".header-wrapper .header-background");
-        const blurOpacitySolid = 1;
-        const blurOpacityTranslucent = 0.67;
+        const blurOpacitySolid = 0;
+        const blurOpacityTranslucent = 0;
         let mainTimeout;
 
         function setColorsForBlur(alpha) {
