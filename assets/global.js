@@ -175,8 +175,6 @@ setTimeout(() => {
           const newCartTotal = Number(cartTotal)/100;
           // console.log(newCartTotal); // Output: the total price of the items in the cart
     
-          console.log(newCartTotal > goal);
-          
           if(newCartTotal > goal){
             const baseload = document.querySelector("#free-ship .f-ship-baseload");
             baseload.style.setProperty("display", "none", "important");
