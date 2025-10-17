@@ -300,171 +300,163 @@
     };
 
     const SELECTORS = {
-      root: ':root',
-      announcementBar: '#shopify-section-announcement-bar',
-      stickyHeader: 'sticky-header.header-wrapper',
       headerWrapper: '.header-wrapper',
+      stickyHeader: 'sticky-header.header-wrapper',
       headerBackground: '.header-wrapper .header-background',
+      announcementBar: '#shopify-section-announcement-bar',
       breadcrumbs: '.breadcrumbs',
       mainContent: '.MainContent'
     };
 
-    const getElement = selector => document.querySelector(selector);
-    const getHeight = element => element ? parseFloat(getComputedStyle(element).height) || 0 : 0;
-    const getScrollTop = () => pageYOffset || document.documentElement.scrollTop;
-
-    let headerScrollHandler = null;
-    let overlayScrollHandler = null;
-    let resizeHandlerAttached = false;
-
-    const resolveOverlayState = () => {
-      const headerWrapper = getElement(SELECTORS.headerWrapper);
-      return headerWrapper ? headerWrapper.dataset.overlay === 'true' : false;
+    const state = {
+      headerScrollHandler: null,
+      overlayScrollHandler: null,
+      resizeAttached: false
     };
 
-    const handleResize = () => refreshHeaderState(resolveOverlayState());
+    const isHomeTemplate = {{ template == 'index' | json }};
 
-    function headerAdjust(overlayEnabled) {
-      const rootElement = getElement(SELECTORS.root);
-      const headerWrapper = getElement(SELECTORS.stickyHeader);
+    const getAnnouncementHeight = () => {
+      const announcementBar = document.querySelector(SELECTORS.announcementBar);
+      if (announcementBar) {
+        const { height } = announcementBar.getBoundingClientRect();
+        if (height) return height;
 
-      if (!headerWrapper) return;
-
-      const fallbackAnnouncementHeight = rootElement ? parseFloat(getComputedStyle(rootElement).getPropertyValue('--announcement-height')) || 0 : 0;
-      const announcementHeight = getHeight(getElement(SELECTORS.announcementBar)) || fallbackAnnouncementHeight;
-
-      const headerHeight = getHeight(headerWrapper);
-
-      {% if template == 'index' %}
-        if (!overlayEnabled && rootElement) {
-          rootElement.style.setProperty('--body-margin', `${headerHeight}px`);
-        } else if (rootElement) {
-          rootElement.style.setProperty('--body-margin', '0px');
-        }
-      {% endif %}
-
-      if (headerScrollHandler) {
-        document.removeEventListener('scroll', headerScrollHandler);
+        const barHeight = parseFloat(getComputedStyle(announcementBar).height);
+        if (!Number.isNaN(barHeight)) return barHeight;
       }
 
-      headerScrollHandler = () => {
-        if (getScrollTop() > announcementHeight) {
-          headerWrapper.style.setProperty('top', '0px', 'important');
-          return;
-        }
+      const rootStyles = getComputedStyle(document.documentElement);
+      const fallbackHeight = parseFloat(rootStyles.getPropertyValue('--announcement-height'));
 
-        const topDifference = announcementHeight - getScrollTop();
-        headerWrapper.style.setProperty('top', `${topDifference}px`, 'important');
-      };
+      return Number.isNaN(fallbackHeight) ? 0 : fallbackHeight;
+    };
 
-      headerScrollHandler();
-      document.addEventListener('scroll', headerScrollHandler);
-    }
+    const setScrollHandler = (property, handler) => {
+      if (state[property]) {
+        document.removeEventListener('scroll', state[property]);
+      }
 
-    function detachOverlayScroll() {
-      if (!overlayScrollHandler) return;
+      state[property] = handler;
 
-      document.removeEventListener('scroll', overlayScrollHandler);
-      overlayScrollHandler = null;
-    }
+      if (handler) {
+        document.addEventListener('scroll', handler, { passive: true });
+      }
+    };
 
-    function overlayMargin(shouldApply) {
-      const headerWrapper = getElement(SELECTORS.headerWrapper);
-      if (!headerWrapper) return;
-
-      const headerHeight = getHeight(headerWrapper);
-      const breadcrumbs = getElement(SELECTORS.breadcrumbs);
-      const target = breadcrumbs || getElement(SELECTORS.mainContent);
-
+    const clearContentMargin = () => {
+      const target = document.querySelector(SELECTORS.breadcrumbs) || document.querySelector(SELECTORS.mainContent);
       if (!target) return;
 
-      if (shouldApply) {
-        target.style.setProperty('margin-top', `${headerHeight}px`, 'important');
-      } else {
-        target.style.removeProperty('margin-top');
-      }
-    }
+      target.style.removeProperty('margin-top');
+    };
 
-    function applyOverlayBehavior(overlayEnabled) {
-      const headerWrapper = getElement(SELECTORS.headerWrapper);
-      const headerBackground = getElement(SELECTORS.headerBackground);
+    const applyContentMargin = headerHeight => {
+      const target = document.querySelector(SELECTORS.breadcrumbs) || document.querySelector(SELECTORS.mainContent);
+      if (!target) return;
 
+      target.style.setProperty('margin-top', `${headerHeight}px`, 'important');
+    };
+
+    const syncHeaderOffset = (headerWrapper, overlayEnabled) => {
       if (!headerWrapper) return;
 
-      detachOverlayScroll();
+      const updateOffset = () => {
+        const announcementHeight = getAnnouncementHeight();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const offset = scrollTop > announcementHeight ? 0 : announcementHeight - scrollTop;
+
+        headerWrapper.style.setProperty('top', `${offset}px`, 'important');
+      };
+
+      updateOffset();
+      setScrollHandler('headerScrollHandler', updateOffset);
+
+      if (isHomeTemplate) {
+        const rootElement = document.documentElement;
+        const headerHeight = headerWrapper.getBoundingClientRect().height;
+        const marginValue = overlayEnabled ? '0px' : `${headerHeight}px`;
+
+        rootElement.style.setProperty('--body-margin', marginValue);
+      }
+    };
+
+    const syncOverlayBackground = (headerWrapper, overlayEnabled) => {
+      const headerBackground = headerWrapper ? headerWrapper.querySelector(SELECTORS.headerBackground) : null;
+      const blurEnabled = headerWrapper ? headerWrapper.dataset.blur === 'true' : false;
+
+      if (!headerWrapper) return;
 
       if (!overlayEnabled) {
         headerWrapper.classList.remove(CLASS_NAMES.overlayVisible);
+        setScrollHandler('overlayScrollHandler', null);
 
-        if (headerBackground) {
+        if (headerBackground && !blurEnabled) {
           headerBackground.style.removeProperty('opacity');
         }
-
-        overlayMargin(false);
 
         return;
       }
 
-      const announcementHeight = getHeight(getElement(SELECTORS.announcementBar));
+      const updateOverlayState = () => {
+        const scrolledPastTop = (window.pageYOffset || document.documentElement.scrollTop) > 0;
 
-      const updateOverlayBackground = () => {
-        const scrolledBeyondOverlay = getScrollTop() > announcementHeight;
+        headerWrapper.classList.toggle(CLASS_NAMES.overlayVisible, scrolledPastTop);
 
-        headerWrapper.classList.toggle(CLASS_NAMES.overlayVisible, scrolledBeyondOverlay);
+        if (!headerBackground) return;
 
-        if (headerBackground) {
-          {% if section.settings.enable_blur %}
-            headerBackground.style.removeProperty('opacity');
-          {% else %}
-            headerBackground.style.setProperty('opacity', scrolledBeyondOverlay ? '100%' : '0%', 'important');
-          {% endif %}
+        if (blurEnabled) {
+          headerBackground.style.removeProperty('opacity');
+          return;
         }
+
+        headerBackground.style.setProperty('opacity', scrolledPastTop ? '100%' : '0%', 'important');
       };
 
-      overlayScrollHandler = updateOverlayBackground;
+      updateOverlayState();
+      setScrollHandler('overlayScrollHandler', updateOverlayState);
+    };
 
-      updateOverlayBackground();
-      document.addEventListener('scroll', overlayScrollHandler);
+    const syncOverlayMargin = (headerWrapper, overlayEnabled) => {
+      if (!headerWrapper) return;
 
-      {% if template != 'index' %}
-        overlayMargin(true);
-      {% endif %}
-    }
+      if (!overlayEnabled || isHomeTemplate) {
+        clearContentMargin();
+        return;
+      }
 
-    function refreshHeaderState(overlayEnabled) {
-      headerAdjust(overlayEnabled);
-      applyOverlayBehavior(overlayEnabled);
-    }
+      applyContentMargin(headerWrapper.getBoundingClientRect().height);
+    };
 
-    function initializeHeader() {
-      const headerWrapper = getElement(SELECTORS.headerWrapper);
+    const refreshHeader = () => {
+      const headerWrapper = document.querySelector(SELECTORS.stickyHeader);
       if (!headerWrapper) return;
 
       const overlayEnabled = headerWrapper.dataset.overlay === 'true';
-      refreshHeaderState(overlayEnabled);
 
-      if (!resizeHandlerAttached) {
-        window.addEventListener('resize', handleResize);
-        resizeHandlerAttached = true;
+      syncHeaderOffset(headerWrapper, overlayEnabled);
+      syncOverlayBackground(headerWrapper, overlayEnabled);
+      syncOverlayMargin(headerWrapper, overlayEnabled);
+    };
+
+    const initializeHeader = () => {
+      refreshHeader();
+
+      if (!state.resizeAttached) {
+        window.addEventListener('resize', refreshHeader);
+        state.resizeAttached = true;
       }
-    }
+    };
 
     document.addEventListener('DOMContentLoaded', initializeHeader);
 
     {% if request.design_mode %}
-      const resetBodyMargin = () => {
-        const rootElement = getElement(SELECTORS.root);
-        if (rootElement) {
-          rootElement.style.setProperty('--body-margin', '0px');
-        }
-      };
-
       document.addEventListener('shopify:section:load', () => {
-        resetBodyMargin();
-        initializeHeader();
+        document.documentElement.style.setProperty('--body-margin', '0px');
+        refreshHeader();
       });
 
-      document.addEventListener('shopify:section:select', initializeHeader);
+      document.addEventListener('shopify:section:select', refreshHeader);
     {% endif %}
   </script>
 
