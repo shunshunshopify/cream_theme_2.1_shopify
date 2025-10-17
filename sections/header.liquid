@@ -295,168 +295,139 @@
 
     customElements.define('sticky-header', StickyHeader);
 
-    const CLASS_NAMES = {
-      overlayVisible: 'header-wrapper--overlay-visible'
-    };
-
     const SELECTORS = {
-      headerWrapper: '.header-wrapper',
-      stickyHeader: 'sticky-header.header-wrapper',
-      headerBackground: '.header-wrapper .header-background',
+      root: ':root',
       announcementBar: '#shopify-section-announcement-bar',
+      stickyHeader: 'sticky-header.header-wrapper',
+      headerWrapper: '.header-wrapper',
+      headerBackground: '.header-wrapper .header-background',
       breadcrumbs: '.breadcrumbs',
       mainContent: '.MainContent'
     };
 
-    const state = {
-      headerScrollHandler: null,
-      overlayScrollHandler: null,
-      resizeAttached: false
+    const getElement = selector => document.querySelector(selector);
+    const getHeight = element => element ? parseFloat(getComputedStyle(element).height) || 0 : 0;
+    const getScrollTop = () => pageYOffset || document.documentElement.scrollTop;
+
+    let headerScrollHandler = null;
+    let overlayScrollHandler = null;
+    let resizeHandlerAttached = false;
+
+    const resolveOverlayState = () => {
+      const headerWrapper = getElement(SELECTORS.headerWrapper);
+      return headerWrapper ? headerWrapper.dataset.overlay === 'true' : false;
     };
 
-    const isHomeTemplate = {{ template == 'index' | json }};
+    const handleResize = () => headerAdjust(resolveOverlayState());
 
-    const getAnnouncementHeight = () => {
-      const announcementBar = document.querySelector(SELECTORS.announcementBar);
-      if (announcementBar) {
-        const { height } = announcementBar.getBoundingClientRect();
-        if (height) return height;
-
-        const barHeight = parseFloat(getComputedStyle(announcementBar).height);
-        if (!Number.isNaN(barHeight)) return barHeight;
-      }
-
-      const rootStyles = getComputedStyle(document.documentElement);
-      const fallbackHeight = parseFloat(rootStyles.getPropertyValue('--announcement-height'));
-
-      return Number.isNaN(fallbackHeight) ? 0 : fallbackHeight;
-    };
-
-    const setScrollHandler = (property, handler) => {
-      if (state[property]) {
-        document.removeEventListener('scroll', state[property]);
-      }
-
-      state[property] = handler;
-
-      if (handler) {
-        document.addEventListener('scroll', handler, { passive: true });
-      }
-    };
-
-    const clearContentMargin = () => {
-      const target = document.querySelector(SELECTORS.breadcrumbs) || document.querySelector(SELECTORS.mainContent);
-      if (!target) return;
-
-      target.style.removeProperty('margin-top');
-    };
-
-    const applyContentMargin = headerHeight => {
-      const target = document.querySelector(SELECTORS.breadcrumbs) || document.querySelector(SELECTORS.mainContent);
-      if (!target) return;
-
-      target.style.setProperty('margin-top', `${headerHeight}px`, 'important');
-    };
-
-    const syncHeaderOffset = (headerWrapper, overlayEnabled) => {
-      if (!headerWrapper) return;
-
-      const updateOffset = () => {
-        const announcementHeight = getAnnouncementHeight();
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const offset = scrollTop > announcementHeight ? 0 : announcementHeight - scrollTop;
-
-        headerWrapper.style.setProperty('top', `${offset}px`, 'important');
-      };
-
-      updateOffset();
-      setScrollHandler('headerScrollHandler', updateOffset);
-
-      if (isHomeTemplate) {
-        const rootElement = document.documentElement;
-        const headerHeight = headerWrapper.getBoundingClientRect().height;
-        const marginValue = overlayEnabled ? '0px' : `${headerHeight}px`;
-
-        rootElement.style.setProperty('--body-margin', marginValue);
-      }
-    };
-
-    const syncOverlayBackground = (headerWrapper, overlayEnabled) => {
-      const headerBackground = headerWrapper ? headerWrapper.querySelector(SELECTORS.headerBackground) : null;
-      const blurEnabled = headerWrapper ? headerWrapper.dataset.blur === 'true' : false;
+    function headerAdjust(overlayEnabled) {
+      const rootElement = getElement(SELECTORS.root);
+      const headerWrapper = getElement(SELECTORS.stickyHeader);
 
       if (!headerWrapper) return;
 
-      if (!overlayEnabled) {
-        headerWrapper.classList.remove(CLASS_NAMES.overlayVisible);
-        setScrollHandler('overlayScrollHandler', null);
+      const fallbackAnnouncementHeight = rootElement ? parseFloat(getComputedStyle(rootElement).getPropertyValue('--announcement-height')) || 0 : 0;
+      const announcementHeight = getHeight(getElement(SELECTORS.announcementBar)) || fallbackAnnouncementHeight;
 
-        if (headerBackground && !blurEnabled) {
-          headerBackground.style.removeProperty('opacity');
+      const headerHeight = getHeight(headerWrapper);
+
+      {% if template == 'index' %}
+        if (!overlayEnabled && rootElement) {
+          rootElement.style.setProperty('--body-margin', `${headerHeight}px`);
         }
+      {% endif %}
 
-        return;
+      if (headerScrollHandler) {
+        document.removeEventListener('scroll', headerScrollHandler);
       }
 
-      const updateOverlayState = () => {
-        const scrolledPastTop = (window.pageYOffset || document.documentElement.scrollTop) > 0;
-
-        headerWrapper.classList.toggle(CLASS_NAMES.overlayVisible, scrolledPastTop);
-
-        if (!headerBackground) return;
-
-        if (blurEnabled) {
-          headerBackground.style.removeProperty('opacity');
+      headerScrollHandler = () => {
+        if (getScrollTop() > announcementHeight) {
+          headerWrapper.style.setProperty('top', '0px', 'important');
           return;
         }
 
-        headerBackground.style.setProperty('opacity', scrolledPastTop ? '100%' : '0%', 'important');
+        const topDifference = announcementHeight - getScrollTop();
+        headerWrapper.style.setProperty('top', `${topDifference}px`, 'important');
       };
 
-      updateOverlayState();
-      setScrollHandler('overlayScrollHandler', updateOverlayState);
-    };
+      headerScrollHandler();
+      document.addEventListener('scroll', headerScrollHandler);
+    }
 
-    const syncOverlayMargin = (headerWrapper, overlayEnabled) => {
+    function overlayAdjust(announcementHeight) {
+      const headerBackground = getElement(SELECTORS.headerBackground);
+      if (!headerBackground) return;
+
+      {% if section.settings.enable_blur %}
+        headerBackground.style.setProperty('opacity', '0%', 'important');
+      {% else %}
+        headerBackground.style.setProperty('opacity', getScrollTop() <= announcementHeight ? '0%' : '100%', 'important');
+      {% endif %}
+    }
+
+    function overlayMargin() {
+      const headerWrapper = getElement(SELECTORS.headerWrapper);
       if (!headerWrapper) return;
 
-      if (overlayEnabled && isHomeTemplate) {
-        clearContentMargin();
-        return;
-      }
+      const headerHeight = getHeight(headerWrapper);
+      const breadcrumbs = getElement(SELECTORS.breadcrumbs);
+      const target = breadcrumbs || getElement(SELECTORS.mainContent);
 
-      applyContentMargin(headerWrapper.getBoundingClientRect().height);
-    };
+      if (!target) return;
 
-    const refreshHeader = () => {
-      const headerWrapper = document.querySelector(SELECTORS.stickyHeader);
+      target.style.setProperty('margin-top', `${headerHeight}px`, 'important');
+    }
+
+    function overlayMod(overlayEnabled) {
+      if (!overlayEnabled) return;
+
+      {% if template == 'index' %}
+        const announcementHeight = getHeight(getElement(SELECTORS.announcementBar));
+
+        if (overlayScrollHandler) {
+          document.removeEventListener('scroll', overlayScrollHandler);
+        }
+
+        overlayScrollHandler = () => overlayAdjust(announcementHeight);
+
+        overlayScrollHandler();
+        document.addEventListener('scroll', overlayScrollHandler);
+      {% else %}
+        overlayMargin();
+      {% endif %}
+    }
+
+    function initializeHeader() {
+      const headerWrapper = getElement(SELECTORS.headerWrapper);
       if (!headerWrapper) return;
 
       const overlayEnabled = headerWrapper.dataset.overlay === 'true';
+      headerAdjust(overlayEnabled);
+      overlayMod(overlayEnabled);
 
-      syncHeaderOffset(headerWrapper, overlayEnabled);
-      syncOverlayBackground(headerWrapper, overlayEnabled);
-      syncOverlayMargin(headerWrapper, overlayEnabled);
-    };
-
-    const initializeHeader = () => {
-      refreshHeader();
-
-      if (!state.resizeAttached) {
-        window.addEventListener('resize', refreshHeader);
-        state.resizeAttached = true;
+      if (!resizeHandlerAttached) {
+        window.addEventListener('resize', handleResize);
+        resizeHandlerAttached = true;
       }
-    };
+    }
 
     document.addEventListener('DOMContentLoaded', initializeHeader);
 
     {% if request.design_mode %}
+      const resetBodyMargin = () => {
+        const rootElement = getElement(SELECTORS.root);
+        if (rootElement) {
+          rootElement.style.setProperty('--body-margin', '0px');
+        }
+      };
+
       document.addEventListener('shopify:section:load', () => {
-        document.documentElement.style.setProperty('--body-margin', '0px');
-        refreshHeader();
+        resetBodyMargin();
+        initializeHeader();
       });
 
-      document.addEventListener('shopify:section:select', refreshHeader);
+      document.addEventListener('shopify:section:select', initializeHeader);
     {% endif %}
   </script>
 
