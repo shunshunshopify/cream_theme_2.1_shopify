@@ -420,7 +420,7 @@
     const syncOverlayMargin = (headerWrapper, overlayEnabled) => {
       if (!headerWrapper) return;
 
-      if (!overlayEnabled || isHomeTemplate) {
+      if (overlayEnabled && isHomeTemplate) {
         clearContentMargin();
         return;
       }
