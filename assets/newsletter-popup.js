@@ -1,6 +1,8 @@
 const initNewsletterPopup = async () => {
     const modal = document.querySelector('#eg-newsletter-modal')
 
+    if (!modal) return
+
     const showModal = () => {
       // console.log("show modal")
         MicroModal.show(modal.id, {
