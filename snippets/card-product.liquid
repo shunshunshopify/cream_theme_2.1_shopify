@@ -9,7 +9,8 @@
   - show_rating: {Boolean} Show the product rating. Default: false
   - extend_height: {Boolean} Card height extends to available container space. Default: true (optional)
   - lazy_load: {Boolean} Image should be lazy loaded. Default: true (optional)
-  - show_quick_add: {Boolean} Show the quick add button.
+  - show_quick_add: {Boolean|String} Quick add configuration. Accepts `true`/`false` or
+    the strings "quick-add-btn", "cart-icon", and "disable".
   - section_id: {String} The ID of the section that contains this card.
   - horizontal_class: {Boolean} Add a card--horizontal class if set to true. Default: false
 
@@ -36,6 +37,15 @@
     if ratio == 0 or ratio == nil
       assign ratio = 1
     endif
+
+    assign quick_add_mode = show_quick_add
+    if quick_add_mode == true
+      assign quick_add_mode = 'quick-add-btn'
+    elsif quick_add_mode == false or quick_add_mode == blank
+      assign quick_add_mode = 'disable'
+    endif
+    assign show_cart_icon = quick_add_mode == 'cart-icon'
+    assign show_quick_add_button = quick_add_mode == 'quick-add-btn'
   -%}
   <div class="card-wrapper product-card-wrapper underline-links-hover">
     <div
@@ -57,9 +67,7 @@
 
 
 
-      {%- if show_quick_add == "cart-icon" or show_quick_add -%}
-
-        
+      {%- if show_cart_icon -%}
         <div class="quick-add cart-icon-qa no-js-hidden">
         {%- assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id -%}
         {%- if card_product.variants.size == 1 -%}
@@ -347,7 +355,7 @@
   
 <!-- Place here -->
 
-        {%- if show_quick_add == "quick-add-btn" -%}
+        {%- if show_quick_add_button -%}
           <div class="quick-add no-js-hidden">
             {%- assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id -%}
             {%- if card_product.variants.size == 1 -%}
