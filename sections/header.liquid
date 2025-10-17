@@ -181,6 +181,11 @@
     .header-wrapper{
       background: linear-gradient(270deg, rgba(240, 110, 105, 0), rgba(249, 208, 163, 0) 100%) !important;
       background-color: rgba(var(--color-background), 0) !important;
+      transition: background-color 300ms ease, background 300ms ease;
+    }
+
+    .header-wrapper.header-wrapper--overlay-visible {
+      background-color: rgba(var(--color-background), 0.92) !important;
     }
   {% endif %}
 {%- endstyle -%}
@@ -290,110 +295,176 @@
 
     customElements.define('sticky-header', StickyHeader);
 
+    const CLASS_NAMES = {
+      overlayVisible: 'header-wrapper--overlay-visible'
+    };
+
+    const SELECTORS = {
+      root: ':root',
+      announcementBar: '#shopify-section-announcement-bar',
+      stickyHeader: 'sticky-header.header-wrapper',
+      headerWrapper: '.header-wrapper',
+      headerBackground: '.header-wrapper .header-background',
+      breadcrumbs: '.breadcrumbs',
+      mainContent: '.MainContent'
+    };
+
+    const getElement = selector => document.querySelector(selector);
+    const getHeight = element => element ? parseFloat(getComputedStyle(element).height) || 0 : 0;
+    const getScrollTop = () => pageYOffset || document.documentElement.scrollTop;
+
+    let headerScrollHandler = null;
+    let overlayScrollHandler = null;
+    let resizeHandlerAttached = false;
+
+    const resolveOverlayState = () => {
+      const headerWrapper = getElement(SELECTORS.headerWrapper);
+      return headerWrapper ? headerWrapper.dataset.overlay === 'true' : false;
+    };
+
+    const handleResize = () => refreshHeaderState(resolveOverlayState());
+
     function headerAdjust(overlayEnabled) {
-      // Get the root element
-      const r = document.querySelector(':root');
-      const rs = getComputedStyle(r);
-      var announcementHeight = parseFloat(rs.getPropertyValue('--announcement-height'));
+      const rootElement = getElement(SELECTORS.root);
+      const headerWrapper = getElement(SELECTORS.stickyHeader);
 
-      const announcementBar = document.querySelector('#shopify-section-announcement-bar');
-      if (announcementBar) {
-        announcementHeight = getComputedStyle(announcementBar).height;
-        announcementHeight = parseFloat(announcementHeight);
-      }
+      if (!headerWrapper) return;
 
-      const headerWrapperSticky = document.querySelector("sticky-header.header-wrapper")
-      var headerHeight = getComputedStyle(headerWrapperSticky).height;
-      headerHeight = parseFloat(headerHeight);
+      const fallbackAnnouncementHeight = rootElement ? parseFloat(getComputedStyle(rootElement).getPropertyValue('--announcement-height')) || 0 : 0;
+      const announcementHeight = getHeight(getElement(SELECTORS.announcementBar)) || fallbackAnnouncementHeight;
 
-      const marginTopForBody = headerHeight;
+      const headerHeight = getHeight(headerWrapper);
 
       {% if template == 'index' %}
-        if (!overlayEnabled) {
-          r.style.setProperty('--body-margin', `${marginTopForBody}px`);
+        if (!overlayEnabled && rootElement) {
+          rootElement.style.setProperty('--body-margin', `${headerHeight}px`);
+        } else if (rootElement) {
+          rootElement.style.setProperty('--body-margin', '0px');
         }
       {% endif %}
 
-      function adjust() {
-        if (scrollY > announcementHeight) {
-          headerWrapperSticky.style.setProperty('top', '0px', 'important');
-        } else {
-          const topDifference = announcementHeight - scrollY;
-          headerWrapperSticky.style.setProperty('top', `${topDifference}px`, 'important');
-        }
+      if (headerScrollHandler) {
+        document.removeEventListener('scroll', headerScrollHandler);
       }
-      adjust();
-      document.addEventListener('scroll', () => adjust());
+
+      headerScrollHandler = () => {
+        if (getScrollTop() > announcementHeight) {
+          headerWrapper.style.setProperty('top', '0px', 'important');
+          return;
+        }
+
+        const topDifference = announcementHeight - getScrollTop();
+        headerWrapper.style.setProperty('top', `${topDifference}px`, 'important');
+      };
+
+      headerScrollHandler();
+      document.addEventListener('scroll', headerScrollHandler);
     }
 
-    function overlayAdjust(announceHeight) {
-      const headerWrapperBackground = document.querySelector(".header-wrapper .header-background");
-      {% if section.settings.enable_blur %}
-      headerWrapperBackground.style.setProperty('opacity', "0%", 'important');
-      {% else %}
-      const top = pageYOffset || document.documentElement.scrollTop;
-      if (top <= announceHeight) {
-        headerWrapperBackground.style.setProperty('opacity', "0%", 'important');
+    function detachOverlayScroll() {
+      if (!overlayScrollHandler) return;
+
+      document.removeEventListener('scroll', overlayScrollHandler);
+      overlayScrollHandler = null;
+    }
+
+    function overlayMargin(shouldApply) {
+      const headerWrapper = getElement(SELECTORS.headerWrapper);
+      if (!headerWrapper) return;
+
+      const headerHeight = getHeight(headerWrapper);
+      const breadcrumbs = getElement(SELECTORS.breadcrumbs);
+      const target = breadcrumbs || getElement(SELECTORS.mainContent);
+
+      if (!target) return;
+
+      if (shouldApply) {
+        target.style.setProperty('margin-top', `${headerHeight}px`, 'important');
       } else {
-        headerWrapperBackground.style.setProperty('opacity', "100%", 'important');
+        target.style.removeProperty('margin-top');
       }
+    }
+
+    function applyOverlayBehavior(overlayEnabled) {
+      const headerWrapper = getElement(SELECTORS.headerWrapper);
+      const headerBackground = getElement(SELECTORS.headerBackground);
+
+      if (!headerWrapper) return;
+
+      detachOverlayScroll();
+
+      if (!overlayEnabled) {
+        headerWrapper.classList.remove(CLASS_NAMES.overlayVisible);
+
+        if (headerBackground) {
+          headerBackground.style.removeProperty('opacity');
+        }
+
+        overlayMargin(false);
+
+        return;
+      }
+
+      const announcementHeight = getHeight(getElement(SELECTORS.announcementBar));
+
+      const updateOverlayBackground = () => {
+        const scrolledBeyondOverlay = getScrollTop() > announcementHeight;
+
+        headerWrapper.classList.toggle(CLASS_NAMES.overlayVisible, scrolledBeyondOverlay);
+
+        if (headerBackground) {
+          {% if section.settings.enable_blur %}
+            headerBackground.style.removeProperty('opacity');
+          {% else %}
+            headerBackground.style.setProperty('opacity', scrolledBeyondOverlay ? '100%' : '0%', 'important');
+          {% endif %}
+        }
+      };
+
+      overlayScrollHandler = updateOverlayBackground;
+
+      updateOverlayBackground();
+      document.addEventListener('scroll', overlayScrollHandler);
+
+      {% if template != 'index' %}
+        overlayMargin(true);
       {% endif %}
     }
 
-    function overlayMargin() {
-      const headerBar = document.querySelector('.header-wrapper'); 
-      const breadcrumbs = document.querySelector('.breadcrumbs');
-      const mainContent = document.querySelector('.MainContent');
-      const headerHeight = parseInt(getComputedStyle(headerBar).height);
-      if (breadcrumbs) {
-        breadcrumbs.style.setProperty('margin-top', `${headerHeight}px`, 'important');
-      } else {
-        mainContent.style.setProperty('margin-top', `${headerHeight}px`, 'important');
-      }
-    }
-
-    function overlayMod(overlayEnabled) {
-      if (overlayEnabled) {
-        {% if template == 'index' %}
-          const announcementBar = document.querySelector('#shopify-section-announcement-bar');
-          let announceHeight = 0;
-          if (announcementBar) {
-            announceHeight = parseInt(getComputedStyle(announcementBar).height);
-          }
-
-          overlayAdjust(announceHeight);
-          document.addEventListener('scroll', () => overlayAdjust(announceHeight));
-        {% else %}
-          overlayMargin();
-        {% endif %}
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const headerBar = document.querySelector('.header-wrapper'); 
-      const overlayEnabled = headerBar.dataset.overlay == 'true';
+    function refreshHeaderState(overlayEnabled) {
       headerAdjust(overlayEnabled);
-      overlayMod(overlayEnabled);
+      applyOverlayBehavior(overlayEnabled);
+    }
 
-      window.addEventListener('resize', () => headerAdjust(overlayEnabled));
-    });
+    function initializeHeader() {
+      const headerWrapper = getElement(SELECTORS.headerWrapper);
+      if (!headerWrapper) return;
+
+      const overlayEnabled = headerWrapper.dataset.overlay === 'true';
+      refreshHeaderState(overlayEnabled);
+
+      if (!resizeHandlerAttached) {
+        window.addEventListener('resize', handleResize);
+        resizeHandlerAttached = true;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initializeHeader);
 
     {% if request.design_mode %}
-    document.addEventListener('shopify:section:load', () => {
-      const r = document.querySelector(':root');
-      r.style.setProperty('--body-margin', "0px");
+      const resetBodyMargin = () => {
+        const rootElement = getElement(SELECTORS.root);
+        if (rootElement) {
+          rootElement.style.setProperty('--body-margin', '0px');
+        }
+      };
 
-      const headerBar = document.querySelector('.header-wrapper'); 
-      const overlayEnabled = headerBar.dataset.overlay == 'true';
-      headerAdjust(overlayEnabled);
-      overlayMod(overlayEnabled);
-    });
+      document.addEventListener('shopify:section:load', () => {
+        resetBodyMargin();
+        initializeHeader();
+      });
 
-    document.addEventListener('shopify:section:select', () => {
-      const headerBar = document.querySelector('.header-wrapper'); 
-      const overlayEnabled = headerBar.dataset.overlay == 'true';
-      headerAdjust(overlayEnabled);
-    });
+      document.addEventListener('shopify:section:select', initializeHeader);
     {% endif %}
   </script>
 
