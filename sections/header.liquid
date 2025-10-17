@@ -181,6 +181,11 @@
     .header-wrapper{
       background: linear-gradient(270deg, rgba(240, 110, 105, 0), rgba(249, 208, 163, 0) 100%) !important;
       background-color: rgba(var(--color-background), 0) !important;
+      transition: background-color 300ms ease, background 300ms ease;
+    }
+
+    .header-wrapper.header-wrapper--overlay-visible {
+      background-color: rgba(var(--color-background), 0.92) !important;
     }
   {% endif %}
 {%- endstyle -%}
